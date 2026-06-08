@@ -1,0 +1,31 @@
+name: Deploy Flask to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            set -e
+
+            cd ${{ secrets.APP_DIR }}
+
+            git pull origin main
+
+            source .venv/bin/activate
+
+            pip install -r requirements.txt || pip install flask gunicorn
+
+            sudo systemctl restart py-for-host
+            sudo systemctl status py-for-host --no-pager
