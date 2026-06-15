@@ -26,33 +26,33 @@
                 <h1>Your Cart</h1>
             </div>
             
-            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+            <div class="cart-wrapper">
                 <!-- Cart Items -->
-                <div style="flex: 2; min-width: 300px;">
+                <div class="cart-items-column">
                     {% if cart_items %}
-                        <div class="glass" style="padding: 1.5rem;">
+                        <div class="glass cart-items-container">
                             {% for item in cart_items %}
-                            <div style="display: flex; gap: 1.5rem; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--glass-border);">
-                                <img src="{{ item.product.image }}" alt="{{ item.product.title }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                            <div class="cart-item">
+                                <img src="{{ item.product.image }}" alt="{{ item.product.title }}" class="cart-item-image">
                                 
-                                <div style="flex: 1;">
-                                    <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">{{ item.product.title }}</h3>
-                                    <p style="color: var(--text-secondary);">${{ "%.2f"|format(item.product.price) }}</p>
+                                <div class="cart-item-details">
+                                    <h3 class="cart-item-title">{{ item.product.title }}</h3>
+                                    <p class="cart-item-price">${{ "%.2f"|format(item.product.price) }}</p>
                                 </div>
                                 
-                                <div style="display: flex; align-items: center; gap: 1rem;">
-                                    <div style="display: flex; align-items: center; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden;">
-                                        <a href="{{ url_for('cart', product_id=item.product.id, qty=-1) }}" style="padding: 0.5rem 0.8rem; color: var(--text-primary); text-decoration: none; border-right: 1px solid var(--glass-border);"><i class="fa-solid fa-minus" style="font-size: 0.8rem;"></i></a>
-                                        <div style="width: 40px; text-align: center; padding: 0.5rem 0;">{{ item.quantity }}</div>
-                                        <a href="{{ url_for('cart', product_id=item.product.id, qty=1) }}" style="padding: 0.5rem 0.8rem; color: var(--text-primary); text-decoration: none; border-left: 1px solid var(--glass-border);"><i class="fa-solid fa-plus" style="font-size: 0.8rem;"></i></a>
+                                <div class="cart-item-actions">
+                                    <div class="quantity-control">
+                                        <a href="{{ url_for('cart', product_id=item.product.id, qty=-1) }}" class="quantity-btn"><i class="fa-solid fa-minus"></i></a>
+                                        <div class="quantity-val">{{ item.quantity }}</div>
+                                        <a href="{{ url_for('cart', product_id=item.product.id, qty=1) }}" class="quantity-btn"><i class="fa-solid fa-plus"></i></a>
                                     </div>
-                                    <a href="{{ url_for('cart_remove', product_id=item.product.id) }}" style="color: var(--danger); padding: 0.5rem;"><i class="fa-solid fa-trash"></i></a>
+                                    <a href="{{ url_for('cart_remove', product_id=item.product.id) }}" class="cart-remove-btn"><i class="fa-solid fa-trash"></i></a>
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="glass" style="padding: 3rem; text-align: center;">
+                        <div class="glass cart-empty-container">
                             <i class="fa-solid fa-cart-shopping" style="font-size: 3rem; color: var(--text-secondary); margin-bottom: 1rem;"></i>
                             <h2>Your cart is empty</h2>
                             <p style="color: var(--text-secondary); margin-bottom: 2rem;">Looks like you haven't added anything yet.</p>
@@ -63,26 +63,26 @@
                 
                 <!-- Order Summary -->
                 {% if cart_items %}
-                <div style="flex: 1; min-width: 300px;">
-                    <div class="glass" style="padding: 2rem; position: sticky; top: 100px;">
-                        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border);">Order Summary</h2>
+                <div class="cart-summary-column">
+                    <div class="glass cart-summary-container">
+                        <h2 class="summary-title">Order Summary</h2>
                         
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-secondary);">
+                        <div class="summary-row">
                             <span>Subtotal</span>
                             <span>${{ "%.2f"|format(cart_total) }}</span>
                         </div>
                         
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: var(--text-secondary);">
+                        <div class="summary-row">
                             <span>Shipping</span>
                             <span>Free</span>
                         </div>
                         
-                        <div style="display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--glass-border); font-size: 1.25rem; font-weight: bold;">
+                        <div class="summary-row total-row">
                             <span>Total</span>
                             <span>${{ "%.2f"|format(cart_total) }}</span>
                         </div>
                         
-                        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-block" style="margin-top: 2rem; font-size: 1.1rem;">Proceed to Checkout</a>
+                        <a href="{{ url_for('checkout') }}" class="btn btn-primary btn-block checkout-btn">Proceed to Checkout</a>
                     </div>
                 </div>
                 {% endif %}
