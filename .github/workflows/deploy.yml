@@ -19,8 +19,11 @@ jobs:
           script: |
             set -e
 
+            # Clean __pycache__ if it exists to avoid merge conflicts
+            rm -rf __pycache__
+            
             cd ${{ secrets.APP_DIR }}
-
+            
             git pull origin main
 
             source .venv/bin/activate
