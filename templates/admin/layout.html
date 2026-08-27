@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} | Vaii Admin</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        dark: {
+                            800: '#0f172a',
+                            850: '#0b1120',
+                            900: '#030712',
+                            card: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-950 font-sans text-slate-200 antialiased selection:bg-brand-500 selection:text-white">
+
+    <div class="flex h-screen overflow-hidden bg-slate-950">
+        
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm hidden lg:hidden"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out bg-slate-900/95 lg:static border-r border-slate-800/80 flex flex-col justify-between backdrop-blur-xl">
+            
+            <div>
+                <!-- Brand Header -->
+                <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800/80">
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-3 group">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-cube"></i>
+                        </div>
+                        <div>
+                            <span class="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-slate-400">Vaii Admin</span>
+                            <span class="block text-xs font-semibold text-brand-400 uppercase tracking-widest">Control Panel</span>
+                        </div>
+                    </a>
+                    <button onclick="toggleSidebar()" class="lg:hidden text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="px-4 py-6 space-y-1.5">
+                    <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Management</p>
+
+                    <!-- Dashboard -->
+                    <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 {% if active_page == 'dashboard' %}bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/25{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                        <i class="fa-solid fa-chart-pie w-5 text-center text-base {% if active_page == 'dashboard' %}text-white{% else %}text-slate-400 group-hover:text-brand-400{% endif %}"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                    <!-- Products -->
+                    <a href="{{ url_for('admin.products_list') }}" class="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 {% if active_page == 'products' %}bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/25{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-box-archive w-5 text-center text-base {% if active_page == 'products' %}text-white{% else %}text-slate-400{% endif %}"></i>
+                            <span>Products</span>
+                        </div>
+                        <span class="text-xs px-2 py-0.5 rounded-full {% if active_page == 'products' %}bg-white/20 text-white{% else %}bg-slate-800 text-slate-400{% endif %}">
+                            CRUD
+                        </span>
+                    </a>
+
+                    <!-- Categories -->
+                    <a href="{{ url_for('admin.categories_list') }}" class="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 {% if active_page == 'categories' %}bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/25{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-layer-group w-5 text-center text-base {% if active_page == 'categories' %}text-white{% else %}text-slate-400{% endif %}"></i>
+                            <span>Categories</span>
+                        </div>
+                        <span class="text-xs px-2 py-0.5 rounded-full {% if active_page == 'categories' %}bg-white/20 text-white{% else %}bg-slate-800 text-slate-400{% endif %}">
+                            CRUD
+                        </span>
+                    </a>
+
+                    <!-- Users -->
+                    <a href="{{ url_for('admin.users_list') }}" class="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium transition-all duration-200 {% if active_page == 'users' %}bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/25{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800/60{% endif %}">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-users-gear w-5 text-center text-base {% if active_page == 'users' %}text-white{% else %}text-slate-400{% endif %}"></i>
+                            <span>Users</span>
+                        </div>
+                        <span class="text-xs px-2 py-0.5 rounded-full {% if active_page == 'users' %}bg-white/20 text-white{% else %}bg-slate-800 text-slate-400{% endif %}">
+                            CRUD
+                        </span>
+                    </a>
+
+                    <div class="pt-6 pb-2">
+                        <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Client Frontend</p>
+                    </div>
+
+                    <!-- Live Client Store -->
+                    <a href="{{ url_for('frontend.index') }}" target="_blank" class="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all duration-200 group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-store w-5 text-center text-slate-400 group-hover:text-emerald-400"></i>
+                            <span>Live Storefront</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-emerald-400"></i>
+                    </a>
+
+                    <!-- Live Products Store -->
+                    <a href="{{ url_for('frontend.products') }}" target="_blank" class="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 transition-all duration-200 group">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-bag-shopping w-5 text-center text-slate-400 group-hover:text-emerald-400"></i>
+                            <span>Browse Shop</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-emerald-400"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Admin Profile Footnote -->
+            <div class="p-4 border-t border-slate-800/80 bg-slate-900/50">
+                <div class="flex items-center gap-3 p-2 rounded-xl bg-slate-800/40 border border-slate-700/40">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="Admin" class="w-10 h-10 rounded-lg object-cover border border-slate-700">
+                        <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full"></span>
+                    </div>
+                    <div class="overflow-hidden flex-1">
+                        <p class="text-sm font-bold text-white truncate">{{ session.get('user_name', 'Alex Morgan') }}</p>
+                        <p class="text-xs text-emerald-400 truncate flex items-center gap-1 font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> {{ session.get('user_role', 'Super Admin') }}
+                        </p>
+                    </div>
+                    <a href="{{ url_for('logout') }}" title="Log Out" class="text-slate-400 hover:text-rose-400 p-1.5 hover:bg-slate-700/50 rounded-lg transition-colors">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- Top Navbar -->
+            <header class="h-16 bg-slate-900/80 border-b border-slate-800/80 flex items-center justify-between px-4 lg:px-8 backdrop-blur-md z-30">
+                <div class="flex items-center gap-4">
+                    <!-- Mobile Hamburger -->
+                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white focus:outline-none">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+
+                    <!-- Breadcrumb / Header Title -->
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="text-slate-400">Admin</span>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-600"></i>
+                        <span class="font-semibold text-white capitalize">{% block header_title %}Dashboard{% endblock %}</span>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center gap-3">
+                    <a href="{{ url_for('frontend.index') }}" target="_blank" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700/60 transition-colors">
+                        <i class="fa-solid fa-globe text-emerald-400"></i>
+                        <span>View Store</span>
+                    </a>
+
+                    <!-- Notification Bell -->
+                    <div class="relative">
+                        <button class="w-9 h-9 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center border border-slate-700/60 transition-colors relative">
+                            <i class="fa-regular fa-bell text-sm"></i>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-500 rounded-full ring-2 ring-slate-900 animate-pulse"></span>
+                        </button>
+                    </div>
+
+                    <!-- Date Badge -->
+                    <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/40 text-xs text-slate-400">
+                        <i class="fa-regular fa-calendar text-brand-400"></i>
+                        <span id="current-date">Live Dashboard</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Flash Messages Notification Container -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="px-4 lg:px-8 pt-4 space-y-2">
+                    {% for category, message in messages %}
+                    <div class="flex items-center justify-between p-4 rounded-xl border backdrop-blur-md transition-all duration-300 {% if category == 'error' %}bg-rose-500/10 border-rose-500/30 text-rose-200{% else %}bg-emerald-500/10 border-emerald-500/30 text-emerald-200{% endif %}" role="alert">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid {% if category == 'error' %}fa-circle-exclamation text-rose-400{% else %}fa-circle-check text-emerald-400{% endif %} text-lg"></i>
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white transition-colors">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Main Page Scrollable Body -->
+            <main class="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8 bg-slate-950">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Global JavaScript for Interactions -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        // Auto close flash alerts after 5s
+        setTimeout(() => {
+            document.querySelectorAll('[role="alert"]').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 5000);
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

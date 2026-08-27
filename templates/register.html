@@ -28,20 +28,33 @@
                     <p style="color: var(--text-secondary);">Join us for premium products</p>
                 </div>
                 
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    <div style="margin-bottom: 1.5rem;">
+                        {% for category, message in messages %}
+                        <div style="padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.5rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; {% if category == 'error' %}background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;{% else %}background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7;{% endif %}">
+                            <i class="fa-solid {% if category == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+
                 <form action="{{ url_for('register') }}" method="POST">
                     <div class="form-group">
                         <label class="form-label">Full Name</label>
-                        <input type="text" class="form-control" required>
+                        <input type="text" name="fullname" value="{{ fullname or '' }}" class="form-control" placeholder="e.g. John Doe" required>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Email Address</label>
-                        <input type="email" class="form-control" required>
+                        <input type="email" name="email" value="{{ email or '' }}" class="form-control" placeholder="john.doe@example.com" required>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">Password</label>
-                        <input type="password" class="form-control" required>
+                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
                     </div>
                     
                     <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">Sign Up</button>
